@@ -2,6 +2,8 @@ import { Router } from "express";
 import { ProjectController } from "../controllers/ProjectController";
 import { body, param } from "express-validator";
 import { handleInputErrors } from "../middleware/validation";
+import { validateProjectExist } from "../middleware/project";
+import { TaskController } from "../controllers/TaskController";
 
 const router = Router()
 router.post('/', 
@@ -46,4 +48,18 @@ router.delete('/:id',
         handleInputErrors,
         ProjectController.deleteProject )
         
+
+/**  ============== Routes for task ================== */
+router.post('/:projectId/tasks' , 
+    validateProjectExist,
+    body('name')
+        .notEmpty()
+        .withMessage('El nombre de la tarea no puede estar vacio.'),
+    body('description')
+        .notEmpty()
+        .withMessage('La descripcion de la tarea no puede estar vacia.'),
+   handleInputErrors,
+   TaskController.createTask )
+
+
 export default router
