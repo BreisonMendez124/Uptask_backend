@@ -27,17 +27,51 @@ export class TaskController {
 
      static getTaskById = async( req: Request , res: Response , next: NextFunction ) => {
         try {
-            const { taskId } = req.params;
-            const task = await Task.findById( taskId );
-            if( !task ){ 
-                const error = new Error('Hubo un error')
-                return res.status( 404 ).json({ error: error.message })
-            }
-            if( task.project.toString() !== req.project.id ){
+          
+            if( req.task.project.toString() !== req.project.id ){
                 const error = new Error('Accion no valida')
                 return res.status( 400 ).json({ error: error.message })
             }
-            res.json( task )
+            res.json( req.task )
+        } catch (error) {
+            res.status( 500 ).json({ error: 'Hubo un error' } )
+        }
+     }
+
+     static updateTask = async( req: Request , res: Response , next: NextFunction ) => {
+        try {
+            if( req.task.project.toString() !== req.project.id ){
+                const error = new Error('Accion no valida')
+                return res.status( 400 ).json({ error: error.message })
+            }
+            req.task.name = req.body.name;
+            req.task.description = req.body.description;
+            await req.task.save()
+            res.json( req.task )
+        } catch (error) {
+            res.status( 500 ).json({ error: 'Hubo un error' } )
+        }
+     }
+
+     static deleteTask = async( req: Request , res: Response , next: NextFunction ) => {
+        try {
+            //Actualizar proyectos
+            const projectsUpdated = req.project.tasks.filter( task  => req.task.id.toString() !== task.toString());
+            req.project.tasks = projectsUpdated;
+            await Promise.allSettled( [ req.task.deleteOne() , req.project.save() ])
+            res.send('Tarea eliminada correctamente')
+        } catch (error) {
+            res.status( 500 ).json({ error: 'Hubo un error' } )
+        }
+     }
+
+     static updateStatus = async( req: Request , res: Response , next: NextFunction ) => {
+        try {
+            
+            const { status } = req.body;
+            req.task.status = status;
+            await req.task.save();
+            res.json('Estado actualizado');
         } catch (error) {
             res.status( 500 ).json({ error: 'Hubo un error' } )
         }
