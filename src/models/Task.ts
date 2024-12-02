@@ -6,7 +6,7 @@ const taskStatus = {
     IN_PROGRESS: "inProgress",
     UNDER_REVIEW: "underReview",
     COMPLETED: "completed"
-}
+} as const
 
 export type TaskStatus = typeof taskStatus[ keyof typeof taskStatus]
 
@@ -31,6 +31,12 @@ export const taskSchema: Schema = new Schema({
     project: { 
         type: Types.ObjectId,
         ref: "Project"
+    },
+    createdAt: { 
+        type: String
+    },
+    updatedAt: { 
+        type: String
     },
     status: { 
         type: String,

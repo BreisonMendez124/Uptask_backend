@@ -48,6 +48,7 @@ export class ProjectController {
             project.clientName = req.body.clientName
             project.projectName = req.body.projectName
             project.description = req.body.description
+            await project.save();
             res.send( 'Proyecto actualizado' )
         } catch (error) {
             console.log("🚀 ~ ProjectController ~ updateProject=async ~ error:", error)
