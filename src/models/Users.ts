@@ -4,7 +4,7 @@ export interface Iusers extends Document {
     email: string,
     password: string,
     name: string,
-    confirmed: string
+    confirmed: Boolean
 }
 
 const userSchema: Schema = new Schema( { 
